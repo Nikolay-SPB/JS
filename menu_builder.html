@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu builder</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+</head>
+
+<style>
+    .menu a.item {
+        border: 1px solid #aaa;
+        padding: 6px 4px;
+        text-decoration: none;
+        color: #1b2544;
+        margin: 2px;
+        border-radius: 4px;
+        display: block;
+        max-width: 200px;
+        text-align: center;
+    }
+    .menu a.item:hover {
+        background-color: #eee;
+    }
+
+    .menu .add {
+        background-color: #ddd;
+        padding: 7px 7px;
+        border-radius: 3px;
+        max-width: 300px;
+        margin: 10px 0;
+        display: none;
+    }
+
+    .menu .b-add {
+        margin-top: 5px;
+        padding: 4px 18px;
+    }
+
+    .menu .add-item {
+        position: absolute;
+        right: -10px;
+        top: 7px;
+    }
+
+    .menu .item.level-1 {
+        margin-left: 20px;
+    }
+    .menu .item.level-2 {
+        margin-left: 40px;
+    }
+    .menu .item.level-3 {
+        margin-left: 60px;
+    }
+    .menu .item.level-4 {
+        margin-left: 80px;
+    }
+    .menu .item.level-5 {
+        margin-left: 100px;
+    }
+
+    .menu .item-container {
+        max-width: 200px;
+        position: relative;
+    }
+
+    .menu a {
+        text-decoration: none;
+    }
+</style>
+
+<body>
+
+    <div class="menu">
+
+    </div>
+
+</body>
+
+<script>
+    let data = [
+        {
+            title: 'Main page',
+            link: '/ru'
+        },
+
+        {
+            title: 'Categories',
+            link: '/ru/categories',
+
+            children: [
+                {
+                    title: 'Fishing',
+                    link: '/categories/fishing',
+
+                    children: [
+                        {
+                            title: 'Pike fishing',
+                            link: '/ru/pike-fishing'
+                        }
+                    ]
+                },
+
+                {
+                    title: 'Swimming',
+                    link: '/ru/swimming'
+                }
+            ]
+        },
+
+        {
+            title: 'About us',
+            link: '/ru/about'
+        },
+    ];
+
+    let menu_builder = function()
+    {
+        let main_container;
+        let main_data;
+
+        let self = this;
+
+        this.init = function(data, container)
+        {
+            main_container = container;
+            main_data = data;
+
+            container.append('<a id="add-main-cat" href="#">+ Add main category</a>');
+
+            container.append('<div class="add">' +
+                    '<label>Enter category name:</label> <br>' +
+                    '<input type="text" class="textInput"> <br>' +
+                    '<label>Enter link:</label> <br>' +
+                    '<input type="text" class="linkInput"> <br>' +
+                    '<button class="b-add">Add</button>' +
+                '</div>');
+
+            self.renderData(data);
+
+            self.handleEvents(container);
+        };
+
+        this.renderData = function(data, level)
+        {
+            let i;
+
+            level = level ? level : 0;
+
+            for (i in data) {
+                main_container.append(
+                    '<div class="item-container">' +
+                        '<a class="item level-'+level+'" href="'+data[i].link+'">'+data[i].title+'</a>' +
+                        '<a href="#" class="add-item level-'+level+'">+</a>'+
+                    '</div>'
+                );
+
+                if (data[i].children) {
+                    self.renderData(data[i].children, level+1);
+                }
+            }
+        };
+
+        this.removeElements = function()
+        {
+            let items = main_container.find('a.item');
+
+            let i;
+
+            for (i=0; i<items.length; i++) {
+                $(items[i]).remove();
+            }
+        };
+
+        this.handleEvents = function()
+        {
+            let add_button = main_container.find('.add');
+
+            $('#add-main-cat').click(function()
+            {
+                add_button.show();
+            });
+
+            main_container.find('.b-add').click(function()
+            {
+                let title = main_container.find('input.textInput').val();
+                let link = main_container.find('input.linkInput').val();
+
+                if (title && link) {
+                    main_data.push({
+                        title: title,
+                        link: link
+                    });
+
+                    self.removeElements();
+                    self.renderData(main_data);
+
+                    add_button.hide();
+                }
+            });
+        };
+    };
+
+    new menu_builder().init(data, $('div.menu'));
+</script>
+
+</html>
