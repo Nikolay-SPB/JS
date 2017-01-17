@@ -1,3 +1,7 @@
+<!--
+    Work in progress
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +11,7 @@
 </head>
 
 <style>
-    .menu a.item {
+    .menu .item {
         border: 1px solid #aaa;
         padding: 6px 4px;
         text-decoration: none;
@@ -17,81 +21,65 @@
         display: block;
         max-width: 200px;
         text-align: center;
+        position: relative;
     }
-    .menu a.item:hover {
+    .menu .item:hover {
         background-color: #eee;
     }
-
     .menu .add {
         background-color: #ddd;
-        padding: 7px 7px;
+        padding: 19px 19px;
         border-radius: 3px;
         max-width: 300px;
         margin: 10px 0;
         display: none;
+        position: absolute;
+        z-index: 10;
+        left: 41%;
+        top: 36%;
     }
-
     .menu .b-add {
         margin-top: 5px;
         padding: 4px 18px;
     }
-
     .menu .add-item {
         position: absolute;
-        right: -10px;
+        right: -17px;
         top: 7px;
-    }
-
-    .menu .item.level-1 {
-        margin-left: 20px;
-    }
-    .menu .item.level-2 {
-        margin-left: 40px;
-    }
-    .menu .item.level-3 {
-        margin-left: 60px;
-    }
-    .menu .item.level-4 {
-        margin-left: 80px;
-    }
-    .menu .item.level-5 {
-        margin-left: 100px;
-    }
-
-    .menu .item-container {
-        max-width: 200px;
-        position: relative;
     }
 
     .menu a {
         text-decoration: none;
     }
+
+    .menu .close {
+        right: 9px;
+        position: absolute;
+        top: 6px;
+    }
 </style>
 
 <body>
 
-    <div class="menu">
+<div class="menu">
 
-    </div>
+</div>
 
 </body>
 
 <script>
-    let data = [
+    var data = [
         {
             title: 'Main page',
             link: '/ru'
         },
-
         {
             title: 'Categories',
             link: '/ru/categories',
-
             children: [
                 {
                     title: 'Fishing',
                     link: '/categories/fishing',
-
                     children: [
                         {
                             title: 'Pike fishing',
@@ -99,61 +87,62 @@
                         }
                     ]
                 },
-
                 {
                     title: 'Swimming',
                     link: '/ru/swimming'
                 }
             ]
         },
-
         {
             title: 'About us',
             link: '/ru/about'
-        },
+        }
     ];
-
-    let menu_builder = function()
+    var menu_builder = function()
     {
-        let main_container;
-        let main_data;
+        var main_container;
+        var main_data;
+        var self = this;
 
-        let self = this;
+        var dialogCallback;
 
         this.init = function(data, container)
         {
             main_container = container;
             main_data = data;
-
             container.append('<a id="add-main-cat" href="#">+ Add main category</a>');
-
             container.append('<div class="add">' +
-                    '<label>Enter category name:</label> <br>' +
-                    '<input type="text" class="textInput"> <br>' +
-                    '<label>Enter link:</label> <br>' +
-                    '<input type="text" class="linkInput"> <br>' +
-                    '<button class="b-add">Add</button>' +
+                    '<a class="close" href="#">✕</a>'+
+                '<label>Enter category name:</label> <br>' +
+                '<input type="text" class="textInput"> <br>' +
+                '<label>Enter link:</label> <br>' +
+                '<input type="text" class="linkInput"> <br>' +
+                '<button class="b-add">Add</button>' +
                 '</div>');
-
             self.renderData(data);
-
             self.handleEvents(container);
+
+            return self;
         };
 
         this.renderData = function(data, level)
         {
-            let i;
-
+            var i;
             level = level ? level : 0;
 
-            for (i in data) {
-                main_container.append(
-                    '<div class="item-container">' +
-                        '<a class="item level-'+level+'" href="'+data[i].link+'">'+data[i].title+'</a>' +
-                        '<a href="#" class="add-item level-'+level+'">+</a>'+
-                    '</div>'
-                );
+            if (level == 0) {
+                main_container.append('<ul class="ul-level-' + level + '"></ul>');
+            } else {
+                main_container.find('ul.ul-level-'+(level-1)).append('<ul class="ul-level-' + level + '"></ul>');
+            }
 
+            for (i in data) {
+                main_container.find('ul.ul-level-'+level).append(
+                    '<li class="item">' +
+                        '<a href="'+data[i].link+'">'+data[i].title+'</a>' +
+                        '<a href="#" class="add-item">+</a>'+
+                    '</li>'
+                );
                 if (data[i].children) {
                     self.renderData(data[i].children, level+1);
                 }
@@ -162,45 +151,120 @@
 
         this.removeElements = function()
         {
-            let items = main_container.find('a.item');
-
-            let i;
-
-            for (i=0; i<items.length; i++) {
-                $(items[i]).remove();
-            }
+            main_container.find('ul.ul-level-0').remove();
         };
 
         this.handleEvents = function()
         {
-            let add_button = main_container.find('.add');
+            var add_button = main_container.find('.add');
+            var add_category = main_container.find('.add-item');
 
             $('#add-main-cat').click(function()
             {
-                add_button.show();
+                self.getCategoryInfo(function(title, link)
+                {
+                    if (title && link) {
+                        main_data.push({
+                            title: title,
+                            link: link
+                        });
+
+                        self.removeElements();
+                        self.renderData(main_data);
+
+                        add_button.hide();
+                    }
+                });
+            });
+
+            add_category.click(function()
+            {
+                var ul = $(this).parents('ul').first();
+                var level = ul.attr('class').match(/ul-level-([0-9]+)/)[1];
+
+                self.getCategoryInfo(function(title, link)
+                {
+                    if (title && link) {
+                        ul.append(
+                            '<ul class="ul-level-' + level + '">' +
+                            '<li class="item">' +
+                            '<a href="' + link + '">' + title + '</a>' +
+                            '<a href="#" class="add-item">+</a>' +
+                            '</li>' +
+                            '</ul>'
+                        );
+
+                        add_button.hide();
+                    }
+                });
             });
 
             main_container.find('.b-add').click(function()
             {
-                let title = main_container.find('input.textInput').val();
-                let link = main_container.find('input.linkInput').val();
+                var add_button = main_container.find('.add');
 
-                if (title && link) {
-                    main_data.push({
-                        title: title,
-                        link: link
+                var title = add_button.find('input.textInput').val();
+                var link = add_button.find('input.linkInput').val();
+
+                dialogCallback(title, link);
+
+                add_button.find('input.textInput').val('');
+                add_button.find('input.linkInput').val('');
+            });
+
+            main_container.find('.close').click(function()
+            {
+                $(this).parent().hide();
+
+                return false;
+            });
+        };
+
+        this.getCategoryInfo = function(callback)
+        {
+            var add_button = main_container.find('.add');
+
+            dialogCallback = callback;
+
+            add_button.show();
+        };
+
+        this.exportMenuToJSON = function(level, object)
+        {
+            var endJSON = [];
+
+            level = level || 0;
+
+            if (level == 0) {
+                $('ul.ul-level-' + level + ' > li').each(function () {
+                    endJSON.push({
+                        title: $(this).find('a:nth-child(1)').html(),
+                        link: $(this).find('a:nth-child(1)').attr('href')
                     });
 
-                    self.removeElements();
-                    self.renderData(main_data);
+                    if ($(this).children('ul.ul-level-' + level + 1)) {
+                        endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).children('ul.ul-level-' + level + 1));
+                    }
+                });
+            } else {
+                object.children('li').each(function ()
+                {
+                    endJSON.push({
+                        title: $(this).find('a:nth-child(1)').html(),
+                        link: $(this).find('a:nth-child(1)').attr('href')
+                    });
 
-                    add_button.hide();
-                }
-            });
+                    if ($(this).children('ul.ul-level-' + level + 1)) {
+                        endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).children('ul.ul-level-' + level + 1));
+                    }
+                });
+            }
+
+            return endJSON;
         };
     };
 
-    new menu_builder().init(data, $('div.menu'));
+    console.log(new menu_builder().init(data, $('div.menu')).exportMenuToJSON());
 </script>
 
 </html>
