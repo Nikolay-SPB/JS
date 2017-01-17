@@ -1,3 +1,3 @@
 # JS
 
-All kind of helper scripts
+All kind of helpful scripts
