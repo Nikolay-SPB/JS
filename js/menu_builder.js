@@ -41,8 +41,10 @@ var menu_builder = function()
         for (i in data) {
             main_container.find('ul.ul-level-'+level).append(
                 '<li class="item">' +
-                '<a href="'+data[i].link+'">'+data[i].title+'</a>' +
-                '<a href="#" class="add-item">+</a>'+
+                    '<a href="'+data[i].link+'">'+data[i].title+'</a>' +
+                    '<a href="#" class="add-item">+</a>'+
+                    '<a href="#" class="edit-item">✎</a>' +
+                    '<a href="#" class="delete-item">✕</a>' +
                 '</li>'
             );
             if (data[i].children) {
@@ -71,23 +73,52 @@ var menu_builder = function()
                 if (ul.length > 0) {
                     ul.append(
                         '<li class="item">' +
-                        '<a href="' + link + '">' + title + '</a>' +
-                        '<a href="#" class="add-item">+</a>' +
+                            '<a href="' + link + '">' + title + '</a>' +
+                            '<a href="#" class="add-item">+</a>' +
+                            '<a href="#" class="edit-item">✎</a>' +
+                            '<a href="#" class="delete-item">✕</a>' +
                         '</li>'
                     );
                 } else {
                     item.parent().after(
                         '<ul class="ul-level-' + (level+1) + '">' +
-                        '<li class="item">' +
-                        '<a href="' + link + '">' + title + '</a>' +
-                        '<a href="#" class="add-item">+</a>' +
-                        '</li>' +
+                            '<li class="item">' +
+                                '<a href="' + link + '">' + title + '</a>' +
+                                '<a href="#" class="add-item">+</a>' +
+                                '<a href="#" class="edit-item">✎</a>' +
+                                '<a href="#" class="delete-item">✕</a>' +
+                            '</li>' +
                         '</ul>'
                     );
                 }
 
                 add_button.hide();
             }
+        });
+    };
+
+    this.handlerDeleteCategory = function(element)
+    {
+        if (confirm('Are you sure that you want to delete this category?')) {
+            var ul = $(element).parent().parent();
+            var li = $(element).parent();
+
+            if (ul.find('li').length == 1) {
+                li.remove();
+                ul.remove();
+            } else {
+                li.remove();
+            }
+        }
+    };
+
+    this.handlerEditCategory = function(element)
+    {
+        var a = element.closest('a');
+
+        self.getCategoryInfo(function(title, link)
+        {
+
         });
     };
 
@@ -98,8 +129,18 @@ var menu_builder = function()
         /* Main delegate */
         main_container.click(function(e)
         {
-            if (e.target.className == 'add-item') {
-                self.handlerAddCategory(e.target);
+            switch (e.target.className) {
+                case 'add-item':
+                    self.handlerAddCategory(e.target);
+                    break;
+
+                case 'delete-item':
+                    self.handlerDeleteCategory(e.target);
+                    break;
+
+                case 'edit-item':
+                    self.handlerEditCategory(e.target);
+                    break;
             }
         });
 
@@ -142,11 +183,17 @@ var menu_builder = function()
         });
     };
 
-    this.getCategoryInfo = function(callback)
+    this.getCategoryInfo = function(callback, initial_title, initial_link)
     {
         var add_button = main_container.find('.add');
 
         dialogCallback = callback;
+
+        if (initial_title)
+            main_container.find('input.textInput').val(initial_title);
+
+        if (initial_link)
+            main_container.find('input.linkInput').val(initial_link);
 
         add_button.show();
     };

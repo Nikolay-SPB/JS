@@ -35,6 +35,18 @@
     top: 7px;
 }
 
+.menu .edit-item {
+    position: absolute;
+    right: -37px;
+    top: 7px;
+}
+
+.menu .delete-item {
+    position: absolute;
+    right: -57px;
+    top: 7px;
+}
+
 .menu a {
     text-decoration: none;
 }
