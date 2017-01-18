@@ -1,0 +1,30 @@
+[
+  {
+    "title": "Main page",
+    "link": "/ru"
+  },
+  {
+    "title": "Categories",
+    "link": "/ru/categories",
+    "children": [
+      {
+        "title": "Fishing",
+        "link": "/categories/fishing",
+        "children": [
+          {
+            "title": "Pike fishing",
+            "link": "/ru/pike-fishing"
+          }
+        ]
+      },
+      {
+        "title": "Swimming",
+        "link": "/ru/swimming"
+      }
+    ]
+  },
+  {
+    "title": "About us",
+    "link": "/ru/about"
+  }
+]

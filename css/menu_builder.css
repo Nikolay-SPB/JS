@@ -1,0 +1,56 @@
+.menu .item {
+    border: 1px solid #aaa;
+    padding: 6px 4px;
+    text-decoration: none;
+    color: #1b2544;
+    margin: 2px;
+    border-radius: 4px;
+    display: block;
+    max-width: 200px;
+    text-align: center;
+    position: relative;
+}
+.menu .item:hover {
+    background-color: #eee;
+}
+.menu .add {
+    background-color: #ddd;
+    padding: 19px 19px;
+    border-radius: 3px;
+    max-width: 300px;
+    margin: 10px 0;
+    display: none;
+    position: absolute;
+    z-index: 10;
+    left: 41%;
+    top: 36%;
+}
+.menu .b-add {
+    margin-top: 5px;
+    padding: 4px 18px;
+}
+.menu .add-item {
+    position: absolute;
+    right: -17px;
+    top: 7px;
+}
+
+.menu a {
+    text-decoration: none;
+}
+
+.menu .close {
+    right: 9px;
+    position: absolute;
+    top: 6px;
+}
+
+.menu ul {
+    margin-bottom: 20px;
+}
+
+textarea {
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 15px;
+}

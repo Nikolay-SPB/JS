@@ -1,76 +1,28 @@
-<!--
-    Work in progress
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Menu builder</title>
+
+    <link rel="stylesheet" href="css/menu_builder.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <script src="js/menu_builder.js"></script>
 </head>
 
-<style>
-    .menu .item {
-        border: 1px solid #aaa;
-        padding: 6px 4px;
-        text-decoration: none;
-        color: #1b2544;
-        margin: 2px;
-        border-radius: 4px;
-        display: block;
-        max-width: 200px;
-        text-align: center;
-        position: relative;
-    }
-    .menu .item:hover {
-        background-color: #eee;
-    }
-    .menu .add {
-        background-color: #ddd;
-        padding: 19px 19px;
-        border-radius: 3px;
-        max-width: 300px;
-        margin: 10px 0;
-        display: none;
-        position: absolute;
-        z-index: 10;
-        left: 41%;
-        top: 36%;
-    }
-    .menu .b-add {
-        margin-top: 5px;
-        padding: 4px 18px;
-    }
-    .menu .add-item {
-        position: absolute;
-        right: -17px;
-        top: 7px;
-    }
-
-    .menu a {
-        text-decoration: none;
-    }
-
-    .menu .close {
-        right: 9px;
-        position: absolute;
-        top: 6px;
-    }
-</style>
-
 <body>
+    <div class="menu"></div>
 
-<div class="menu">
-
-</div>
-
-<br><br>
-<button id="b-export-to-json">Export to JSON</button>
-<br><br>
-<textarea id="JSONExport" rows="10" cols="50"></textarea>
+    <br><br>
+    <button id="b-export-to-json">Export to JSON</button>
+    <br><br>
+    <textarea id="JSONExport" rows="15" cols="65"></textarea>
+</body>
 
 <script>
+    var m_builder;
+
     $('#b-export-to-json').click(function()
     {
         var json = JSON.stringify(m_builder.exportMenuToJSON());
@@ -79,220 +31,19 @@
 
         return false;
     });
-</script>
 
-</body>
+    /* Get data */
+    $.ajax({
+        url: 'data/example_data.json',
+        method: 'get',
 
-<script>
-    var data = [
+        success: function(data)
         {
-            title: 'Main page',
-            link: '/ru'
-        },
-        {
-            title: 'Categories',
-            link: '/ru/categories',
-            children: [
-                {
-                    title: 'Fishing',
-                    link: '/categories/fishing',
-                    children: [
-                        {
-                            title: 'Pike fishing',
-                            link: '/ru/pike-fishing'
-                        }
-                    ]
-                },
-                {
-                    title: 'Swimming',
-                    link: '/ru/swimming'
-                }
-            ]
-        },
-        {
-            title: 'About us',
-            link: '/ru/about'
+            if (data) {
+                m_builder = new menu_builder().init(data, $('div.menu'));
+            }
         }
-    ];
-
-var menu_builder = function()
-    {
-        var main_container;
-        var main_data;
-        var self = this;
-
-        var dialogCallback;
-
-        this.init = function(data, container)
-        {
-            main_container = container;
-            main_data = data;
-            container.append('<a id="add-main-cat" href="#">+ Add main category</a>');
-            container.append('<div class="add">' +
-                    '<a class="close" href="#">✕</a>'+
-                '<label>Enter category name:</label> <br>' +
-                '<input type="text" class="textInput"> <br>' +
-                '<label>Enter link:</label> <br>' +
-                '<input type="text" class="linkInput"> <br>' +
-                '<button class="b-add">Add</button>' +
-                '</div>');
-            self.renderData(data);
-            self.handleEvents(container);
-
-            return self;
-        };
-
-        this.renderData = function(data, level)
-        {
-            var i;
-            level = level ? level : 0;
-
-            if (level == 0) {
-                main_container.append('<ul class="ul-level-' + level + '"></ul>');
-            } else {
-                main_container.find('ul.ul-level-'+(level-1)).append('<ul class="ul-level-' + level + '"></ul>');
-            }
-
-            for (i in data) {
-                main_container.find('ul.ul-level-'+level).append(
-                    '<li class="item">' +
-                        '<a href="'+data[i].link+'">'+data[i].title+'</a>' +
-                        '<a href="#" class="add-item">+</a>'+
-                    '</li>'
-                );
-                if (data[i].children) {
-                    self.renderData(data[i].children, level+1);
-                }
-            }
-        };
-
-        this.removeElements = function()
-        {
-            main_container.find('ul.ul-level-0').remove();
-        };
-
-        this.handleEvents = function()
-        {
-            var add_button = main_container.find('.add');
-            var add_category = main_container.find('.add-item');
-
-            $('#add-main-cat').click(function()
-            {
-                self.getCategoryInfo(function(title, link)
-                {
-                    if (title && link) {
-                        main_data.push({
-                            title: title,
-                            link: link
-                        });
-
-                        self.removeElements();
-                        self.renderData(main_data);
-
-                        add_button.hide();
-                    }
-                });
-            });
-
-            add_category.click(function()
-            {
-                var ul = $(this).parent().next('ul');
-                var item = $(this);
-
-                var level = Number($(this).parent().parent().attr('class').match(/ul-level-([0-9]+)/)[1]);
-
-                self.getCategoryInfo(function(title, link)
-                {
-                    if (title && link) {
-                        if (ul.length > 0) {
-                            ul.append(
-                                '<li class="item">' +
-                                    '<a href="' + link + '">' + title + '</a>' +
-                                    '<a href="#" class="add-item">+</a>' +
-                                '</li>'
-                            );
-                        } else {
-                            item.parent().after(
-                                '<ul class="ul-level-' + (level+1) + '">' +
-                                    '<li class="item">' +
-                                        '<a href="' + link + '">' + title + '</a>' +
-                                        '<a href="#" class="add-item">+</a>' +
-                                    '</li>' +
-                                '</ul>'
-                            );
-                        }
-
-                        add_button.hide();
-                    }
-                });
-            });
-
-            main_container.find('.b-add').click(function()
-            {
-                var add_button = main_container.find('.add');
-
-                var title = add_button.find('input.textInput').val();
-                var link = add_button.find('input.linkInput').val();
-
-                dialogCallback(title, link);
-
-                add_button.find('input.textInput').val('');
-                add_button.find('input.linkInput').val('');
-            });
-
-            main_container.find('.close').click(function()
-            {
-                $(this).parent().hide();
-
-                return false;
-            });
-        };
-
-        this.getCategoryInfo = function(callback)
-        {
-            var add_button = main_container.find('.add');
-
-            dialogCallback = callback;
-
-            add_button.show();
-        };
-
-        this.exportMenuToJSON = function(level, object)
-        {
-            var endJSON = [];
-
-            level = level || 0;
-
-            if (level == 0) {
-                $('ul.ul-level-' + level + ' > li').each(function () {
-                    endJSON.push({
-                        title: $(this).find('a:nth-child(1)').html(),
-                        link: $(this).find('a:nth-child(1)').attr('href')
-                    });
-
-                    if ($(this).next('ul').length > 0) {
-                        endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).parent().children('ul.ul-level-'+(level+1)));
-                    }
-                });
-            } else {
-                object.children('li').each(function ()
-                {
-                    endJSON.push({
-                        title: $(this).find('a:nth-child(1)').html(),
-                        link: $(this).find('a:nth-child(1)').attr('href')
-                    });
-
-                    if ($(this).next('ul').length > 0) {
-                        endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).parent().children('ul.ul-level-'+(level+1)));
-                    }
-                });
-            }
-
-            return endJSON;
-        };
-    };
-
-    var m_builder = new menu_builder().init(data, $('div.menu'));
+    });
 </script>
 
 </html>
