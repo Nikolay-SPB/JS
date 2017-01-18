@@ -10,4 +10,6 @@ Installation:
 4. Load start data into variable
 5. Init menu builder and pass data to it
 
-Simple examle included in "menu_builder.html" file
+Simple example included in "menu_builder.html" file
+
+**Live demo**: http://rybalkapro.ru/github/menu_builder.html
