@@ -65,6 +65,22 @@
 
 </div>
 
+<br><br>
+<button id="b-export-to-json">Export to JSON</button>
+<br><br>
+<textarea id="JSONExport" rows="10" cols="50"></textarea>
+
+<script>
+    $('#b-export-to-json').click(function()
+    {
+        var json = JSON.stringify(m_builder.exportMenuToJSON());
+
+        $('#JSONExport').val(json);
+
+        return false;
+    });
+</script>
+
 </body>
 
 <script>
@@ -98,7 +114,8 @@
             link: '/ru/about'
         }
     ];
-    var menu_builder = function()
+
+var menu_builder = function()
     {
         var main_container;
         var main_data;
@@ -179,20 +196,31 @@
 
             add_category.click(function()
             {
-                var ul = $(this).parents('ul').first();
-                var level = ul.attr('class').match(/ul-level-([0-9]+)/)[1];
+                var ul = $(this).parent().next('ul');
+                var item = $(this);
+
+                var level = Number($(this).parent().parent().attr('class').match(/ul-level-([0-9]+)/)[1]);
 
                 self.getCategoryInfo(function(title, link)
                 {
                     if (title && link) {
-                        ul.append(
-                            '<ul class="ul-level-' + level + '">' +
-                            '<li class="item">' +
-                            '<a href="' + link + '">' + title + '</a>' +
-                            '<a href="#" class="add-item">+</a>' +
-                            '</li>' +
-                            '</ul>'
-                        );
+                        if (ul.length > 0) {
+                            ul.append(
+                                '<li class="item">' +
+                                    '<a href="' + link + '">' + title + '</a>' +
+                                    '<a href="#" class="add-item">+</a>' +
+                                '</li>'
+                            );
+                        } else {
+                            item.parent().after(
+                                '<ul class="ul-level-' + (level+1) + '">' +
+                                    '<li class="item">' +
+                                        '<a href="' + link + '">' + title + '</a>' +
+                                        '<a href="#" class="add-item">+</a>' +
+                                    '</li>' +
+                                '</ul>'
+                            );
+                        }
 
                         add_button.hide();
                     }
@@ -242,8 +270,8 @@
                         link: $(this).find('a:nth-child(1)').attr('href')
                     });
 
-                    if ($(this).children('ul.ul-level-' + level + 1)) {
-                        endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).children('ul.ul-level-' + level + 1));
+                    if ($(this).next('ul').length > 0) {
+                        endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).parent().children('ul.ul-level-'+(level+1)));
                     }
                 });
             } else {
@@ -254,8 +282,8 @@
                         link: $(this).find('a:nth-child(1)').attr('href')
                     });
 
-                    if ($(this).children('ul.ul-level-' + level + 1)) {
-                        endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).children('ul.ul-level-' + level + 1));
+                    if ($(this).next('ul').length > 0) {
+                        endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).parent().children('ul.ul-level-'+(level+1)));
                     }
                 });
             }
@@ -264,7 +292,7 @@
         };
     };
 
-    console.log(new menu_builder().init(data, $('div.menu')).exportMenuToJSON());
+    var m_builder = new menu_builder().init(data, $('div.menu'));
 </script>
 
 </html>
