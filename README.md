@@ -1,6 +1,6 @@
 # Simple menu builder
-# Author: Nikolay Pilipovich
-# Email: nikola.pilipovic@gmail.com
+#### Author: Nikolay Pilipovich
+#### Email: nikola.pilipovic@gmail.com
 
 Installation:
 
