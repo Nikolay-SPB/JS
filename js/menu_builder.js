@@ -60,8 +60,6 @@ var menu_builder = function()
 
     this.handlerAddCategory = function(element)
     {
-        var add_button = main_container.find('.add');
-
         var ul = $(element).parent().next('ul');
         var item = $(element);
 
@@ -81,27 +79,26 @@ var menu_builder = function()
                     );
                 } else {
                     item.parent().after(
-                        '<ul class="ul-level-' + (level+1) + '">' +
-                            '<li class="item">' +
-                                '<a href="' + link + '">' + title + '</a>' +
-                                '<a href="#" class="add-item">+</a>' +
-                                '<a href="#" class="edit-item">✎</a>' +
-                                '<a href="#" class="delete-item">✕</a>' +
-                            '</li>' +
+                        '<ul class="ul-level-' + (level + 1) + '">' +
+                        '<li class="item">' +
+                        '<a href="' + link + '">' + title + '</a>' +
+                        '<a href="#" class="add-item">+</a>' +
+                        '<a href="#" class="edit-item">✎</a>' +
+                        '<a href="#" class="delete-item">✕</a>' +
+                        '</li>' +
                         '</ul>'
                     );
                 }
-
-                add_button.hide();
             }
         });
     };
 
     this.handlerDeleteCategory = function(element)
     {
-        if (confirm('Are you sure that you want to delete this category?')) {
+        if (confirm('Are you sure that you want to delete this category? If category contains subcategories, all subcategories will be deleted also.')) {
             var ul = $(element).parent().parent();
             var li = $(element).parent();
+            var ul_w_childs = $(element).parent().next('ul');
 
             if (ul.find('li').length == 1) {
                 li.remove();
@@ -109,17 +106,23 @@ var menu_builder = function()
             } else {
                 li.remove();
             }
+
+            if (ul_w_childs.length > 0) {
+                ul_w_childs.remove();
+            }
         }
     };
 
     this.handlerEditCategory = function(element)
     {
-        var a = element.closest('a');
+        var a = $(element).parent().children('a').first();
 
         self.getCategoryInfo(function(title, link)
         {
+            a.text(title);
+            a.attr('href', link);
 
-        });
+        }, a.text(), a.attr('href'));
     };
 
     this.handleEvents = function()
@@ -156,8 +159,6 @@ var menu_builder = function()
 
                     self.removeElements();
                     self.renderData(main_data);
-
-                    add_button.hide();
                 }
             });
         });
@@ -173,6 +174,8 @@ var menu_builder = function()
 
             add_button.find('input.textInput').val('');
             add_button.find('input.linkInput').val('');
+
+            add_button.hide();
         });
 
         main_container.find('.close').click(function()
@@ -212,7 +215,7 @@ var menu_builder = function()
                 });
 
                 if ($(this).next('ul').length > 0) {
-                    endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).parent().children('ul.ul-level-'+(level+1)));
+                    endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).next('ul'));
                 }
             });
         } else {
@@ -224,7 +227,7 @@ var menu_builder = function()
                 });
 
                 if ($(this).next('ul').length > 0) {
-                    endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).parent().children('ul.ul-level-'+(level+1)));
+                    endJSON[endJSON.length - 1].children = self.exportMenuToJSON(level + 1, $(this).next('ul'));
                 }
             });
         }
