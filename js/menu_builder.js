@@ -55,11 +55,6 @@ var menu_builder = function()
         }
     };
 
-    this.removeElements = function()
-    {
-        main_container.find('ul.ul-level-0').remove();
-    };
-
     this.handlerAddCategory = function(element)
     {
         var ul = $(element).parent().next('ul');
