@@ -3,22 +3,21 @@ var menu_builder_templates =
     itemTemplate: function(link, title)
     {
         return  '<li class="item">' +
-            '<a href="' + link + '">' + title + '</a>' +
-            '<a href="#" class="add-item">+</a>' +
-            '<a href="#" class="edit-item">✎</a>' +
-            '<a href="#" class="delete-item">✕</a>' +
+                '<a href="' + link + '">' + title + '</a>' +
+                '<a href="#" class="add-item">+</a>' +
+                '<a href="#" class="edit-item">✎</a>' +
+                '<a href="#" class="delete-item">✕</a>' +
+                '<a href="#" class="up-item">↑</a>' +
+                '<a href="#" class="down-item">↓</a>' +
             '</li>';
     },
 
     itemTemplateWithContainer: function(level, link, title)
     {
-        return  '<ul class="ul-level-' + (level + 1) + '">' +
-            '<li class="item">' +
-            '<a href="' + link + '">' + title + '</a>' +
-            '<a href="#" class="add-item">+</a>' +
-            '<a href="#" class="edit-item">✎</a>' +
-            '<a href="#" class="delete-item">✕</a>' +
-            '</li>' +
+        return '<ul class="ul-level-' + (level + 1) + '">' +
+
+                this.itemTemplate(link, title) +
+                
             '</ul>';
     },
 

@@ -115,6 +115,47 @@ var menu_builder = function()
         }, a.text(), a.attr('href'));
     };
 
+    this.handlerUpItem = function(element)
+    {
+        element = $(element);
+        var ul = element.parent().next('ul');
+
+        var siblings = element.parent().prevAll('li');
+
+        if (siblings.length > 0) {
+            $(siblings[0]).before(element.parent());
+
+            if (ul.length > 0) {
+                $(siblings[0]).before(ul);
+            }
+        }
+    };
+
+    this.handlerDownItem = function(element)
+    {
+        element = $(element);
+        var ul = element.parent().next('ul');
+
+        var siblings = element.parent().nextAll('li');
+        var siblings_ul = $(siblings[0]).next('ul');
+
+        if (siblings.length > 0) {
+            if (siblings_ul.length > 0) {
+                if (ul.length > 0) {
+                    siblings_ul.length.after(ul);
+                }
+
+                siblings_ul.after(element.parent());
+            } else {
+                if (ul.length > 0) {
+                    $(siblings[0]).after(ul);
+                }
+
+                $(siblings[0]).after(element.parent());
+            }
+        }
+    };
+
     this.handleEvents = function()
     {
         var add_button = main_container.find('.add');
@@ -133,6 +174,14 @@ var menu_builder = function()
 
                 case 'edit-item':
                     self.handlerEditCategory(e.target);
+                    break;
+
+                case 'up-item':
+                    self.handlerUpItem(e.target);
+                    break;
+
+                case 'down-item':
+                    self.handlerDownItem(e.target);
                     break;
             }
         });

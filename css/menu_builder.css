@@ -49,9 +49,24 @@
     top: 7px;
 }
 
+.menu .up-item {
+    position: absolute;
+    right: -77px;
+    top: 7px;
+}
+
+.menu .down-item {
+    position: absolute;
+    right: -97px;
+    top: 7px;
+}
+
 .menu a {
     text-decoration: none;
     color: black;
+}
+.menu a:hover {
+    color: #ffc353;
 }
 
 .menu .close {
