@@ -5,24 +5,31 @@ var menu_builder = function()
     var main_container;
     var main_data;
     var self = this;
+    var templates;
 
     var dialogCallback;
+
+    /* Get templates */
+    var tpl = document.createElement('script');
+    tpl.src = 'tpl/all_templates.js';
+    var body = document.getElementsByTagName('body');
+    document.body.insertBefore(tpl, document.body.children[0]);
+
+    tpl.onload = function()
+    {
+        templates = menu_builder_templates;
+
+        main_container.append(templates.addMainCategoryButton);
+        main_container.append(templates.getCategoryBox);
+
+        self.renderData(main_data);
+        self.handleEvents(main_container);
+    };
 
     this.init = function(data, container)
     {
         main_container = container;
         main_data = data;
-        container.append('<a id="add-main-cat" href="#">+ Add main category</a>');
-        container.append('<div class="add">' +
-            '<a class="close" href="#">✕</a>'+
-            '<label>Enter category name:</label> <br>' +
-            '<input type="text" class="textInput"> <br>' +
-            '<label>Enter link:</label> <br>' +
-            '<input type="text" class="linkInput"> <br>' +
-            '<button class="b-add">Add</button>' +
-            '</div>');
-        self.renderData(data);
-        self.handleEvents(container);
 
         return self;
     };
@@ -40,12 +47,7 @@ var menu_builder = function()
 
         for (i in data) {
             main_container.find('ul.ul-level-'+level).append(
-                '<li class="item">' +
-                    '<a href="'+data[i].link+'">'+data[i].title+'</a>' +
-                    '<a href="#" class="add-item">+</a>'+
-                    '<a href="#" class="edit-item">✎</a>' +
-                    '<a href="#" class="delete-item">✕</a>' +
-                '</li>'
+                templates.itemTemplate(data[i].link, data[i].title)
             );
             if (data[i].children) {
                 self.renderData(data[i].children, level+1);
@@ -70,23 +72,11 @@ var menu_builder = function()
             if (title && link) {
                 if (ul.length > 0) {
                     ul.append(
-                        '<li class="item">' +
-                            '<a href="' + link + '">' + title + '</a>' +
-                            '<a href="#" class="add-item">+</a>' +
-                            '<a href="#" class="edit-item">✎</a>' +
-                            '<a href="#" class="delete-item">✕</a>' +
-                        '</li>'
+                        templates.itemTemplate(link, title)
                     );
                 } else {
                     item.parent().after(
-                        '<ul class="ul-level-' + (level + 1) + '">' +
-                        '<li class="item">' +
-                        '<a href="' + link + '">' + title + '</a>' +
-                        '<a href="#" class="add-item">+</a>' +
-                        '<a href="#" class="edit-item">✎</a>' +
-                        '<a href="#" class="delete-item">✕</a>' +
-                        '</li>' +
-                        '</ul>'
+                        templates.itemTemplateWithContainer(level+1, link, title)
                     );
                 }
             }
@@ -152,13 +142,7 @@ var menu_builder = function()
             self.getCategoryInfo(function(title, link)
             {
                 if (title && link) {
-                    main_data.push({
-                        title: title,
-                        link: link
-                    });
-
-                    self.removeElements();
-                    self.renderData(main_data);
+                    main_container.find('.ul-level-0').append( templates.itemTemplate(link, title) );
                 }
             });
         });
