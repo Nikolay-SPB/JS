@@ -1,4 +1,5 @@
 /* TODO: localization */
+/* TODO: change path to template and css */
 
 var menu_builder = function()
 {
@@ -36,17 +37,21 @@ var menu_builder = function()
 
     this.renderData = function(data, level)
     {
-        var i;
+        var i, ul;
         level = level ? level : 0;
 
         if (level == 0) {
             main_container.append('<ul class="ul-level-' + level + '"></ul>');
         } else {
-            main_container.find('ul.ul-level-'+(level-1)).append('<ul class="ul-level-' + level + '"></ul>');
+            ul = main_container.find('ul.ul-level-'+(level-1)).last();
+
+            ul.append('<ul class="ul-level-' + level + '"></ul>');
         }
 
         for (i in data) {
-            main_container.find('ul.ul-level-'+level).append(
+            ul = main_container.find('ul.ul-level-'+level).last();
+
+            ul.append(
                 templates.itemTemplate(data[i].link, data[i].title)
             );
             if (data[i].children) {
@@ -161,22 +166,27 @@ var menu_builder = function()
             switch (e.target.className) {
                 case 'add-item':
                     self.handlerAddCategory(e.target);
+                    return false;
                     break;
 
                 case 'delete-item':
                     self.handlerDeleteCategory(e.target);
+                    return false;
                     break;
 
                 case 'edit-item':
                     self.handlerEditCategory(e.target);
+                    return false;
                     break;
 
                 case 'up-item':
                     self.handlerUpItem(e.target);
+                    return false;
                     break;
 
                 case 'down-item':
                     self.handlerDownItem(e.target);
+                    return false;
                     break;
             }
         });
