@@ -1,4 +1,4 @@
-.menu .item {
+.menu-builder .item {
     border: 2px solid #54926d;
     padding: 6px 4px;
     text-decoration: none;
@@ -12,10 +12,10 @@
     transition: all 0.3s;
     border-radius: 3px;
 }
-.menu .item:hover {
+.menu-builder .item:hover {
     background-color: #eee;
 }
-.menu .add {
+.menu-builder .add {
     background-color: #ddd;
     padding: 19px 19px;
     border-radius: 3px;
@@ -27,60 +27,47 @@
     left: 41%;
     top: 36%;
 }
-.menu .b-add {
+.menu-builder .b-add {
     margin-top: 5px;
     padding: 4px 18px;
 }
-.menu .add-item {
+.menu-builder .add-item {
     position: absolute;
     right: -17px;
     top: 7px;
 }
-
-.menu .edit-item {
+.menu-builder .edit-item {
     position: absolute;
     right: -37px;
     top: 7px;
 }
-
-.menu .delete-item {
+.menu-builder .delete-item {
     position: absolute;
     right: -57px;
     top: 7px;
 }
-
-.menu .up-item {
+.menu-builder .up-item {
     position: absolute;
     right: -77px;
     top: 7px;
 }
-
-.menu .down-item {
+.menu-builder .down-item {
     position: absolute;
     right: -97px;
     top: 7px;
 }
-
-.menu a {
+.menu-builder a {
     text-decoration: none;
     color: black;
 }
-.menu a:hover {
+.menu-builder a:hover {
     color: #ffc353;
 }
-
-.menu .close {
+.menu-builder .close {
     right: 9px;
     position: absolute;
     top: 6px;
 }
-
-.menu ul {
+.menu-builder ul {
     margin-bottom: 20px;
-}
-
-textarea {
-    border-radius: 5px;
-    padding: 5px;
-    font-size: 15px;
 }

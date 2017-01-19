@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <div class="menu"></div>
+    <div class="menu-builder"></div>
 
     <br><br>
     <button id="b-export-to-json">Export to JSON</button>
@@ -44,7 +44,7 @@
             }
 
             if (data) {
-                m_builder = new menu_builder().init(data, $('div.menu'));
+                m_builder = new menu_builder().init(data, $('div.menu-builder'));
             }
         }
     });
