@@ -7,32 +7,47 @@ var menu_builder = function()
     var main_data;
     var self = this;
     var templates;
+    var template_source = 'tpl/all_templates.js';
 
     var dialogCallback;
 
-    /* Get templates */
-    var tpl = document.createElement('script');
-    tpl.src = 'tpl/all_templates.js';
-    var body = document.getElementsByTagName('body');
-    document.body.insertBefore(tpl, document.body.children[0]);
-
-    tpl.onload = function()
-    {
-        templates = menu_builder_templates;
-
-        main_container.append(templates.addMainCategoryButton);
-        main_container.append(templates.getCategoryBox);
-
-        self.renderData(main_data);
-        self.handleEvents(main_container);
-    };
-
-    this.init = function(data, container)
+    /**
+     * Init function
+     * @param data
+     * @param container
+     * @param template_path If not specified then default file will be used ( tpl/all_templates.js )
+     * @returns {menu_builder}
+     */
+    this.init = function(data, container, template_path)
     {
         main_container = container;
         main_data = data;
 
+        if (template_path) {
+            template_source = template_path;
+        }
+
+        self.loadTemplate();
+
         return self;
+    };
+
+    this.loadTemplate = function()
+    {
+        var tpl = document.createElement('script');
+        tpl.src = template_source;
+        document.body.insertBefore(tpl, document.body.children[0]);
+
+        tpl.onload = function()
+        {
+            templates = menu_builder_templates;
+
+            main_container.append(templates.addMainCategoryButton);
+            main_container.append(templates.getCategoryBox);
+
+            self.renderData(main_data);
+            self.handleEvents(main_container);
+        };
     };
 
     this.renderData = function(data, level)

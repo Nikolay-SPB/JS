@@ -69,5 +69,8 @@
     top: 6px;
 }
 .menu-builder ul {
+    margin-left: 30px;
     margin-bottom: 20px;
+    padding: 0 25px;
+    border-left: 1px solid #4e4e4e;
 }
